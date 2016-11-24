@@ -1,0 +1,394 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>CQRS, EventSourcing -> Functional Architecture</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/league.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+
+				<section data-autoslide="60000">
+					<h2>CQRS and Event Sourcing: First steps to a Functional Architecture</h2>
+					<ul>
+						<li>Rodolfo de Paula - Locaweb since 2016</li>
+				 </ul>
+				</section>
+
+				<section  data-autoslide="60000">
+					<h5>Introducing myself </h5>
+						<ul>
+						 <li class="fragment">1987 Dbase Fox Clipper Sidekick - José Ramalho</li>
+						 <li class="fragment">1989 Structured Analysis, Data Flow Diagram, Entity Relationship Model, Events List - Ed Yourdon, Tom De Marco, Chris Gane, Trish Sarson, L.Constantine, P.Chen</li>
+						 <li class="fragment">1993 First professional stack: FoxPro Novell Netware </li>
+						 <li class="fragment">1996 ERP for ~250 people over 4 countries</li>
+						 <li class="fragment">2000 Java <-> OO Gof J2EE Patterns UML RUP CMMi</li>
+						 <li class="fragment">2006 WTF moment: Peter Coad, Martin Fowler </li>
+						 <li class="fragment">2007 Feature Driven Design, Streamlined Object Modeling, Resources Agents Events</li>
+						 <li class="fragment">2008 Domain Driven Design (Eric Evans), Scala (not FP)</li>
+						 <li class="fragment">2010 Event Sourcing, CQRS - Greg Young</li>
+						 <li class="fragment">2014 Payments solution for a top 3 e-Commerce webstore</li>
+					 </ul>
+					 <aside class="notes">
+						 <ul>
+							<li>Netware era file sharing.</li>
+							<li>Não havia transação. Tentativa frustrada com NLM</li>
+							<li>Como haviam algum reqs: alterar programação do pedido, replicação e não havia transações, design ficou event sourcing</li>
+							<li>Replicação de pedidos, cotações, etc era baseada em versão </li>
+						 </ul>
+					 </aside>
+				</section>
+
+				<section>
+					<h5>Java Modeling in Color with Uml</h5>
+					<h1>
+						<img src="./images/modeling_color.gif" border="0"/>
+					</h1>
+					<ul>
+				 </ul>
+				</section>
+
+				<section>
+					<h5>Streamlined Object Modeling</h5>
+					<table class="reveal">
+					    <tr>
+					      <td>People</td>
+					      <td>Actor</td>
+					    </tr>
+							<tr>
+								<td></td>
+								<td>Role</td>
+							</tr>
+							<tr>
+								<td>Places</td>
+								<td>Place & OuterPLace</td>
+							</tr>
+							<tr>
+								<td>Things</td>
+								<td>Item & Specific Item</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td>Assembly & Party</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td>Container & Content</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td>Group & Member</td>
+							</tr>
+							<tr>
+								<td>Events</td>
+								<td>Transaction</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td>Composite Transaction & Line Item</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td>Follow-up Transaction</td>
+							</tr>
+					</table>
+					<aside class="notes">
+						<ul>
+						</ul>
+					</aside>
+				</section>
+
+				<section>
+					<h5>REA - Resources, Events and Agents</h5>
+					<h1>
+						<img src="./images/REA-Metamodel.png" border="0"/>
+					</h1>
+					<ul>
+				 </ul>
+				 <aside class="notes">
+					 <ul>
+					 </ul>
+				 </aside>
+				</section>
+
+				<section>
+					<h5>Patterns hangover: some vocabulary needed - Martin Fowler</h5>
+					<ul>
+					 <li class="fragment"><a href="http://martinfowler.com/bliki/BoundedContext.html">DDD Strategic Modeling</a></li>
+					 <li class="fragment"><a href="http://martinfowler.com/eaaCatalog/domainModel.html">Domain Model</a></li>
+					 <li class="fragment"><a href="http://martinfowler.com/eaaCatalog/domainModel.html">Anemic Domain Model</a></li>
+					 <li class="fragment"><a href="http://martinfowler.com/eaaCatalog/transactionScript.html">Transaction Script</a></li>
+				 	</ul>
+				</section>
+
+				<section>
+					<h5>Current Radar</h5>
+					<ul>
+					 <li class="fragment">DDD - Domain Driven Design - Eric Evans</li>
+					 <li class="fragment">CQS - Command - query separation - Bertrand Meyer</li>
+					 <li class="fragment">CQRS - Command Query Responsability Segregation - Greg Young</li>
+					 <li class="fragment">ES - Event Sourcing</li>
+				 	</ul>
+					<aside class="notes">
+						<ul>
+							<li>Betrand Meyer escrevendo sobre Design By Contract</li>
+						</ul>
+					</aside>
+				</section>
+
+				<section>
+					  <h5>Motivations / when to use it</h5>
+						<ul>
+						 <li class="fragment">Business, events focus</li>
+						 <li class="fragment">Ability to put the system in any prior state (regressions, projections)</li>
+						 <li class="fragment">Avoid being legacy: you can react / improve your solution by versioning or adding commands, events or read models</li>
+						 <li class="fragment">It scales much better and easily, its very testing friendly: BDD, etc</li>
+						 <li class="fragment">It is aligned with Functional Programming</li>
+						 <li class="fragment">It is conceptually very simple and it works !</li>
+						</ul>
+				</section>
+
+				<section>
+					<h5>When to avoid it</h5>
+						<ul>
+						 <li class="fragment">You don't need a Domain Model at all</li>
+						 <li class="fragment">You have a CRUD application and it works</li>
+						 <li class="fragment">You just think it is too complicated</li>
+						</ul>
+				</section>
+
+				<section>
+					<h5>Domain Driven Design</h5>
+					<h1>
+						<img src="./images/ddd-book.png" border="0"/>
+					</h1>
+					<ul>
+           <li class="fragment">2003 - Eric Evans book</li onfocus="">
+					 <li class="fragment"><a href="http://blog.locaweb.com.br/artigos/metodologias-ageis/o-que-e-domain-driven-design/"> 2009 - blog.locaweb.com.br</a></li>
+					 <li class="fragment">Have you seen a success case, anywhere ? </li>
+					 <li class="fragment">Really ?</li>
+				 </ul>
+				</section>
+
+				<section data-autoslide="60000">
+					<h4>Usual architecture - by Greg Young 2008</h4>
+					<h1>
+						<img src="./images/usual-arch.png" border="0"/>
+					</h1>
+					<ul>
+						<li class="fragment">It's just yet another non OO legacy abstraction full of side effects, no matter it's JVM, JS, Ruby, Python, Elixir, Go, etc</li>
+			  	</ul>
+					<aside class="notes">
+						<ul>
+						 <li>MVC REST RPC ORM Relational DB</li>
+	 					 <li>DTOs being moved/mapped to/from db, domain model and json</li>
+	 					 <li>Usually leads to an Anemic Domain Model and Transaction Scripts within App Services</li>
+						</ul>
+					</aside>
+					<ul>
+				 </ul>
+				</section>
+
+			<section>
+				<h5>How do you scale it ?</h5>
+				<ul>
+					<li class="fragment">Since its very depedent to DB ?</li>
+					<li class="fragment">What if 80% are reads and 20% are writes ? </li>
+					<li class="fragment">For writing, normalize DB schema (~3NF)</li>
+					<li class="fragment">For queries, add indexes and denormalize (1NF)</li>
+					<li class="fragment">If you are using an ORM, what kind of object are you modeling ? What trade offs you did ?</li>
+				</ul>
+				<aside class="notes">
+					<ul>
+					</ul>
+        </aside>
+			</section>
+
+				<section>
+					<h5>Domain Driven Design failures - the usual suspects</h5>
+					<h1>
+						<img src="./images/suspects.jpg" border="0"/>
+					</h1>
+					<ul>
+					 <li class="fragment">Missing the Big Picture. Not Gof Patterns</li>
+					 <li class="fragment">Strategic versus Tactical Modeling</li>
+					 <li class="fragment">Missing the importance of Ubiquitous Language</li>
+					 <li class="fragment">Actually, you cannot implement DDD with similar architectures</li>
+				 </ul>
+				</section>
+
+				<section>
+					<h5>First steps to improve</h5>
+					<ul>
+						<li class="fragment">Tracks the client intent with commands. Commands has an ID, are immutable, imperative and may fail</li>
+						<li class="fragment">Commands adds business value since it can express the client intentions</li>
+						<li class="fragment">CQS - methods returning something must be read only. Only void methods can mutate state</li>
+						<li class="fragment">CQRS - two components: one for writing and other for reading</li>
+					</ul>
+					<aside class="notes">
+						<ul>
+						</ul>
+	        </aside>
+				</section>
+
+				<section>
+					<h5>CRQS</h5>
+					<h5>
+						<img src="./images/cqrs-arch.png" border="0"/>
+					</h5>
+					<ul>
+						<li class="fragment">Now the read model is mapped from db to dto. No impedance mismach. Much simpler to implement / scale.</li>
+						<li class="fragment">Now the write model needs only a query: get aggregate root by id</li>
+					</ul>
+					<aside class="notes">
+						<ul>
+						</ul>
+	        </aside>
+				</section>
+
+				<section>
+					<h5>Missing parts</h5>
+					<ul>
+						<li class="fragment">What will be written ?</li>
+						<li class="fragment">How to syncronize with read model ?</li>
+						<li class="fragment">Introducing Event Sourcing. ES is probably from 70's, before RDBMS. I did it myself in 1996.</li>
+			  	</ul>
+					<aside class="notes">
+						<ul>
+						</ul>
+	        </aside>
+				</section>
+
+				<section>
+					<h5>Event Sourcing</h5>
+					<h1>
+						<img src="./images/cqrs-es-arch.png" border="0"/>
+					</h1>
+					<ul>
+						<li class="fragment">Now you can also estimate your user stories better by enumerating your DTOs, commands and events (FDD) and client, domain and read models</li>
+						<li class="fragment">You also became a bit closer of a Functional Architecture</li>
+						<!-- <li class="fragment">And the write side can use something like <a href="http://www.javaslang.io/javaslang-docs/#_try"> Javalangs Try</a>, <a href="http://www.scala-lang.org/api/2.9.3/scala/util/Try.html"> Scala Try</a></li> -->
+					</ul>
+					<aside class="notes">
+						<ul>
+						</ul>
+					</aside>
+				</section>
+
+				<section>
+					<h5>CQRS + Event Sourcing</h5>
+					<h1>
+						<img src="./images/detailed1.png" border="0"/>
+					</h1>
+					<ul>
+						<!-- <li class="fragment">And the write side can use something like <a href="http://www.javaslang.io/javaslang-docs/#_try"> Javalangs Try</a>, <a href="http://www.scala-lang.org/api/2.9.3/scala/util/Try.html"> Scala Try</a></li> -->
+					</ul>
+					<aside class="notes">
+						<ul>
+						</ul>
+					</aside>
+				</section>
+
+				<section>
+					<h5>Implementation Approaches</h5>
+					<ul>
+						<li class="fragment"><a href="https://github.com/gregoryyoung/m-r/blob/master/SimpleCQRS/CommandHandlers.cs"> Greg Young Super Simple CQRS</a></li>
+				    <li class="fragment"><a href="https://cqrs.wordpress.com/documents/building-event-storage/">Building your own Eventstore - RDBMS</a></li>
+						<li class="fragment"><a href="https://blog.jayway.com/2013/06/20/dont-publish-domain-events-return-them/">Don't publish domain events, return them!</a></li>
+					  <li class="fragment"><a href="https://github.com/rodolfodpk/myeslib/blob/master/inventory-aggregate-root/src/main/java/org/myeslib/example/SampleDomain.java"> Myeslib</a>, <a href="https://github.com/rodolfodpk/myeslib2/tree/master/myeslib2-example-api/src/main/java/sampledomain/aggregates/inventoryitem">MyEslib2</a></li>
+						<li class="fragment"><a href="https://msdn.microsoft.com/en-us/library/jj591569.aspx">Saga or Process Manager</a></li>
+					</ul>
+					<aside class="notes">
+						<ul>
+						</ul>
+					</aside>
+				</section>
+
+				<section>
+					<h5>Real world: Mr. Krabs</h5>
+					<h1>
+						<img src="./images/mr-krabs.png" border="0"/>
+					</h1>
+					<ul>
+							<li class="fragment">Replaced a monolith solution: yeah, microservices</li>
+							<li class="fragment">Write side: easy to scale. Concurrent commands: just retry, optimistic locking, leverage RDBMS trustness</li>
+							<li class="fragment">Read side: projections are harder to scale. Started with ORM for read model then refactored to 1NF or in memory</li>
+							<li class="fragment">Very easy to debug/inspect an order with many payment instruments: the power of events</li>
+					</ul>
+					<aside class="notes">
+						<ul>
+						 <li>Substituiu monolito onde impacto de uma integração ferrava as outras -> microservices</li>
+			 			 <li>Projeções não está nesse diagrama. Projeção apenas uma instância no cluster. Mesmo problema do scheduler do Pabx. Resolvido c/ Consul, Etcd, etc</li>
+						 <li>AggregateRoots não se falam diretamente, apenas atraves de comandos e eventos</li>
+						 <li>Saga monitora o eventos de outros ARs e das integrações e pode eventualmente emitir ou agendar Commands p/ outros ARs</li>
+						 <li>Consistência eventual</li>
+		         <li>A gente usava snapshots mas nem  precisava porque o ciclo de vida de um pedido se encerra com poucos comandos/eventos</li>
+						</ul>
+					</aside>
+				</section>
+
+				<section>
+					<h5>Current status</h5>
+					<ul>
+							<li class="fragment">Keyvent playground: finally some code</li>
+						  <li class="fragment"><a href="https://geteventstore.com/">Eventstore</a></li>
+						  <li class="fragment"><a href="http://www.lagomframework.com/">Lagom...framework</a></li>
+							<li class="fragment">The dilema of CQRS/ES frameworks</li>
+							<li class="fragment"><a href="http://shop.oreilly.com/product/0636920043935.do">Sam Newman's 8 Principles of Microservices: Modelled Around Business Domain</a></li>
+							<li class="fragment"><a href="https://www.youtube.com/watch?v=kZL41SMXWdM">Event Sourcing is actually just functional code</a></li>
+					</ul>
+					<aside class="notes">
+						<ul>
+
+						</ul>
+					</aside>
+				</section>
+
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				history: true,
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'socket.io/socket.io.js', async: true },
+					{ src: 'plugin/notes-server/client.js', async: true }
+				]
+			});
+
+			// Slide every five seconds
+			Reveal.configure({
+				autoSlide: 15000
+			});
+
+		</script>
+	</body>
+</html>

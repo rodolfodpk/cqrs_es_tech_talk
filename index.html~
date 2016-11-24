@@ -1,0 +1,214 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>CQRS, EventSourcing -> Functional Architecture</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/league.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h3>TOC</h3>
+						<ul>
+						 <li class="fragment">DDD - Domain Driven Design</li>
+						 <li class="fragment">CQRS - Command-query responsability segregation</li>
+						 <li class="fragment">ES - Event Sourcing</li>
+						 <li class="fragment">FP - Functional Programming</li>
+						 <li class="fragment">Hands on!</li>
+					 </ul>
+				</section>
+				<section data-autoslide="20000">
+					<h3>Domain Driven Design</h3>
+					<h1>
+						<img src="/home/rodolfo/Downloads/ppt/ddd-book.png" border="0"/>
+					</h1>
+					<ul>
+           <li class="fragment">2003 - Eric Evans book</li onfocus="">
+					 <li class="fragment"><a href="http://blog.locaweb.com.br/artigos/metodologias-ageis/o-que-e-domain-driven-design/"> 2009 - blog.locaweb.com.br</a></li>
+					 <li class="fragment">Have you seen a success case, anywhere ? </li>
+					 <li class="fragment">Really ?</li>
+				 </ul>
+				</section>
+				<section data-autoslide="20000">
+					<h3>Domain Driven Design failures - the usual suspects</h3>
+					<h1>
+						<img src="/home/rodolfo/Downloads/ppt/suspects.jpg" border="0"/>
+					</h1>
+					<ul>
+					 <li class="fragment">Missing the Big Picture</li>
+					 <li class="fragment">Strategic versus Tactical Modeling</li>
+					 <li class="fragment">Missing the importance of Ubiquitous Language</li>
+					 <li class="fragment">Implementation impedances: ORM, two phase commit, etc</li>
+					 <li class="fragment">Keyser Söze: don't mess with him...</li>
+				 </ul>
+				</section>
+				<section data-autoslide="20000">
+					<h4>Usual architecture</h4>
+					<h1>
+						<img src="/home/rodolfo/Downloads/ppt/usual-arch.png" border="0"/>
+					</h1>
+					<ul>
+					 <li class="fragment">MVC and ORM</li>
+					 <li class="fragment">What if 80% are reads and 20% are writes ? </li>
+					 <li class="fragment">For writing, normalize DB schema (3NF-5NF)</li>
+					 <li class="fragment">For queries, add indexes and denormalize (1NF)</li>
+					 <li class="fragment">If you are using an ORM, what's kind of object are you modeling ?</li>
+					 <li class="fragment">When you have a leaky data abstraction, you probably also have a leaky computational model (SRP)</li>
+				 </ul>
+				</section>
+				<section>
+					<h3>ORM - Structure Focus</h3>
+					<ul>
+						<li class="fragment">When using it, people are focusing on the data structure</li>
+						<li class="fragment">This data structure tries to represents (usually only a data) model for both reads and writes</li>
+						<li class="fragment">Then people usually adds some "manager" or "service" classes to handle business (computational) logic</li>
+						<li class="fragment">Thereafter, they are using an Anemic Domain Model</li>
+						<li class="fragment">Wait! If FP is about data and functions, what's the problem?</li>
+						<li class="fragment">The problem is: they have a model trying to useful for both behaviour and queries, thus they are are violating SRP</li>
+						<li class="fragment">So then it's very likely thay also have very poor control of side effects. A read model doesn't have any side effect, right ? </li>
+					</ul>
+					<aside class="notes">
+						<ul>
+							<li>Nova versão Locastyle já fundiu com LW_TelecomImages</li>
+							<li>Consolidar serviços visando minimizar infra de Continuous Integration, ambientes, etc</li>
+							<li>Monolith pode evoluir pra microserviço DESDE que componentes sejam desacoplados</li>
+							<li>Serviços com implementação homogênea (mesmo chassi: Dropwizard, SpringBoot)</li>
+							<li>Bancos do asterisk e pabx evoluem independentemente</li>
+						</ul>
+	        </aside>
+				</section>
+				<section data-autoslide="20000">
+					<h4>Enter CQRS</h4>
+					<h1>
+						<img src="/home/rodolfo/Downloads/ppt/usual-arch.png" border="0"/>
+					</h1>
+					<ul>
+					 <li class="fragment">QCON 2006 / 2007 - Greg Young </li>
+				 </ul>
+				</section>
+				<section>
+					<h3>Dependências - visão atual</h3>
+					<h1>
+						<img src="images/s2.png" border="0"/>
+					</h1>
+					<aside class="notes">
+						<ul>
+							<li>Tudo depende do ORM </li>
+							<li>ORM não contém lógica de negócio (Managers), focando estrutura</li>
+							<li>Product e Provisioner são serviços Ruby.</li>
+							<li>Dependência bidirecional entre Painel e Provisioning</li>
+						</ul>
+					</aside>
+				</section>
+				<section>
+					<h3>Dependências - sugestões</h3>
+					 <ul>
+						<li>Stack de software atualizada e homogênea (*)</li>
+						<li class="fragment">Desacoplar Pabx do Asterisk</li>
+						<li class="fragment">Desacoplar Pabx Core do banco de dados</li>
+						<li class="fragment">Introduzir Domain Driven Design</li>
+						<li class="fragment">Event Sourcing / CRQS como approach para implementar DDD</li>
+					</ul>
+					<aside class="notes">
+							<ul>
+								<li>Citar dificuldade de atualização (APIs do Struts, VRaptor, Hibernate e até Spring deprecadas)</li>
+								<li>DDD livro 2003</li>
+								<li><a href="http://blog.locaweb.com.br/artigos/metodologias-ageis/o-que-e-domain-driven-design/">DDD na Locaweb (CTO da Elo7 ?)</a></li>
+								<li>Mencionar a tech talk ES/CQRS que será em Novembro</li>
+							</ul>
+	        </aside>
+				</section>
+				<section>
+					<h3>Implantação - visão sugerida</h3>
+					<h1>
+						<img src="images/s3.png" border="0"/>
+					</h1>
+					<aside class="notes">
+							<ul>
+								<li>Frontend consome JSON do backend e submete JSON para cmd Executor, que pode ser sync/async</li>
+								<li>Frontend então pode ser Elm, Javascript, PHP, Ruby, Exilir, Java..</li>
+								<li>Frontend consome stream com dados de monitoração via Websocket, etc</li>
+								<li>Projector alimenta read model (desnormalizado), asterisk config files e info mastigada para AGI</li>
+								<li>Asterisk models contém modelos para configuração e AGI</li>
+							</ul>
+					</aside>
+				</section>
+				<section>
+					<h3>Dependências - visão sugerida</h3>
+					<h1>
+						<img src="images/s4.png" border="0"/>
+					</h1>
+					<aside class="notes">
+							<ul>
+								<li>Ultima linha são serviços</li>
+								<li>Apenas Monitoring e AGI dependem do Asterisk</li>
+								<li>Core contém value objects, services, aggregate roots (negócio), commandos, eventos e read model</li>
+								<li>Asterisk models contém modelos para configuração e AGI</li>
+							</ul>
+					</aside>
+				</section>
+				<section>
+					<h3>Adendo ** DFD da visão sugerida</h3>
+					<h1>
+						<img src="images/dfd.png" border="0"/>
+					</h1>
+					<aside class="notes">
+							<ul>
+								<li>Dividir e conquistar</li>
+								<li>Desacoplar, desacoplar..</li>
+							</ul>
+					</aside>
+				</section>
+				<section data-autoslide="20000">
+					<h1>
+						<img src="images/company-class.png" border="0"/>
+					</h1>
+				</section>
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				history: true,
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'socket.io/socket.io.js', async: true },
+					{ src: 'plugin/notes-server/client.js', async: true }
+				]
+			});
+
+			// Slide every five seconds
+			Reveal.configure({
+				autoSlide: 15000
+			});
+
+		</script>
+	</body>
+</html>
